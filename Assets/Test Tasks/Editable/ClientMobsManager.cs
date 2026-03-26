@@ -18,7 +18,7 @@ namespace TestTask.Editable
 
         [field: SerializeField] public MonsterData CurrentMonsterData;
 
-        public void SpawnMonster(MonsterData monsterData)
+        public void UpdateMonster(MonsterData monsterData)
         {
             if (CurrentMonsterData != null)
                 CurrentMonsterData.MonsterDamaged -= UpdateHealthBar;
@@ -39,7 +39,9 @@ namespace TestTask.Editable
 
         public void DamageMonster()
         {
-            ClientPacketsHandler.SendDamageMonsterRequest(CurrentMonsterData.MonsterId, Random.Range(10.0f, 20.0f));
+            float damage = Random.Range(10.0f, 20.0f);
+            CurrentMonsterData.TakeDamage(damage);
+            ClientPacketsHandler.SendDamageMonsterRequest(CurrentMonsterData.MonsterId, damage);
         }
     }
 }
