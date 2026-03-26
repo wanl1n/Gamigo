@@ -24,7 +24,7 @@ namespace TestTask.Editable
             float monsterCurrentHealth = packet.ReadFloat();
 
             ClientManager.Instance.ClientMobsManager.
-                UpdateMonster(new MonsterData(monsterId, (MonsterNames)monsterType, monsterMaxHealth, monsterCurrentHealth));
+                SpawnMonster(new MonsterData(monsterId, (MonsterNames)monsterType, monsterMaxHealth, monsterCurrentHealth));
         }
         #endregion
 

@@ -18,13 +18,13 @@ namespace TestTask.Editable
 
         [field: SerializeField] public MonsterData CurrentMonsterData;
 
-        public void UpdateMonster(MonsterData monsterData)
+        private bool _monsterDead = false;
+        public void SpawnMonster(MonsterData monsterData)
         {
-            if (CurrentMonsterData != null)
-                CurrentMonsterData.MonsterDamaged -= UpdateHealthBar;
-
             CurrentMonsterData = monsterData;
             CurrentMonsterData.MonsterDamaged += UpdateHealthBar;
+            CurrentMonsterData.MonsterDeath += OnMonsterDied;
+            _monsterDead = false;
 
             // UI
             MonsterPortrait.sprite = MonsterPortraits[(int)monsterData.MonsterType];
@@ -39,9 +39,18 @@ namespace TestTask.Editable
 
         public void DamageMonster()
         {
+            if (_monsterDead) return;
+
             float damage = Random.Range(10.0f, 20.0f);
             CurrentMonsterData.TakeDamage(damage);
             ClientPacketsHandler.SendDamageMonsterRequest(CurrentMonsterData.MonsterId, damage);
+        }
+
+        public void OnMonsterDied()
+        {
+            CurrentMonsterData.MonsterDamaged -= UpdateHealthBar;
+            CurrentMonsterData.MonsterDeath -= OnMonsterDied;
+            _monsterDead = true;
         }
     }
 }

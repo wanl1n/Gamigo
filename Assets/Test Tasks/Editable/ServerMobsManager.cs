@@ -32,6 +32,7 @@ namespace TestTask.Editable
         {
             MonsterData.MonsterDeath -= OnMonsterDied;
             MonsterData = SpawnMonster();
+            ServerPacketsHandler.SendNewMonsterData();
         }
     }
 }  

@@ -1,4 +1,5 @@
 using TestTask.NonEditable;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace TestTask.Editable
@@ -12,7 +13,7 @@ namespace TestTask.Editable
             SendLoginResponse(clientLogInResponse, clientId);
 
             if (clientLogInResponse == LoginResponse.Success)
-                SendMonsterData(ServerMock.Instance.ServerMobsManager.MonsterData);
+                SendNewMonsterData();
         }
 
         public static void DamageMonsterRequest(Packet packet)
@@ -21,7 +22,6 @@ namespace TestTask.Editable
             var damage = packet.ReadFloat();
 
             ServerMock.Instance.ServerMobsManager.MonsterData.TakeDamage(damage);
-            SendMonsterData(ServerMock.Instance.ServerMobsManager.MonsterData);
         }
 
         #endregion
@@ -37,10 +37,11 @@ namespace TestTask.Editable
                 ServerMock.Instance.PacketSenderServer.SendToClient(packet);
             }
         }
-        public static void SendMonsterData(MonsterData monsterData)
+        public static void SendNewMonsterData()
         {
             using (Packet packet = new Packet(2))
             {
+                MonsterData monsterData = ServerMock.Instance.ServerMobsManager.MonsterData;
                 packet.Write(monsterData.MonsterId);
                 packet.Write((int)monsterData.MonsterType);
                 packet.Write(monsterData.MonsterMaxHealth);
