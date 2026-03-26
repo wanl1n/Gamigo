@@ -20,10 +20,8 @@ namespace TestTask.Editable
         {
             int monsterId = packet.ReadInt();
             int monsterType = packet.ReadInt();
-            string monsterName = packet.ReadString();
             float monsterMaxHealth = packet.ReadFloat();
             float monsterCurrentHealth = packet.ReadFloat();
-            int clientId = packet.ReadInt();
 
             ClientManager.Instance.ClientMobsManager.
                 SpawnMonster(new MonsterData(monsterId, (MonsterNames)monsterType, monsterMaxHealth, monsterCurrentHealth));
@@ -35,6 +33,17 @@ namespace TestTask.Editable
         {
             Packet packet = new Packet(1);
             ClientManager.Instance.PacketSenderClient.SendToServer(packet);
+        }
+
+        public static void SendDamageMonsterRequest(int monsterId, float damage)
+        {
+            using (Packet packet = new Packet(2))
+            {
+                packet.Write(monsterId);
+                packet.Write(damage);
+
+                ClientManager.Instance.PacketSenderClient.SendToServer(packet);
+            }
         }
         #endregion
     }

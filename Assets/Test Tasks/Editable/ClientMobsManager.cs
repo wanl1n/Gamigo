@@ -8,27 +8,38 @@ namespace TestTask.Editable
 {
     public class ClientMobsManager : MonoBehaviour
     {
+        // UI Elements for displaying monster information
         [field: SerializeField] public TextMeshProUGUI MonsterName { get; private set; }
         [field: SerializeField] public Image MonsterPortrait { get; private set; }
         [field: SerializeField] public Image MonsterHealthBar { get; private set; }
 
+        // Array of monster portraits corresponding to different monster types
         [field: SerializeField] public Sprite[] MonsterPortraits { get; private set; }
+
+        [field: SerializeField] public MonsterData CurrentMonsterData;
 
         public void SpawnMonster(MonsterData monsterData)
         {
-            // Implement the logic to spawn a monster in the client game world using the provided monsterData.
-            // This could involve instantiating a prefab, setting its properties based on monsterData, and adding it to the scene.
+            if (CurrentMonsterData != null)
+                CurrentMonsterData.MonsterDamaged -= UpdateHealthBar;
+
+            CurrentMonsterData = monsterData;
+            CurrentMonsterData.MonsterDamaged += UpdateHealthBar;
+
+            // UI
             MonsterPortrait.sprite = MonsterPortraits[(int)monsterData.MonsterType];
             MonsterName.text = monsterData.MonsterName;
-            UpdateHealthBar(monsterData.MonsterCurrentHealth, monsterData.MonsterMaxHealth);
+            UpdateHealthBar(CurrentMonsterData.MonsterCurrentHealth/CurrentMonsterData.MonsterMaxHealth);
         }
 
-        public void UpdateHealthBar(float currentHealth, float maxHealth)
+        public void UpdateHealthBar(float healthPercentage)
         {
-            // Implement the logic to update the health bar UI based on the current and maximum health of the monster.
-            // This could involve setting the fill amount of a UI Image or updating a slider value.
-            float healthPercentage = currentHealth / maxHealth;
             MonsterHealthBar.fillAmount = healthPercentage;
+        }
+
+        public void DamageMonster()
+        {
+            ClientPacketsHandler.SendDamageMonsterRequest(CurrentMonsterData.MonsterId, Random.Range(10.0f, 20.0f));
         }
     }
 }
