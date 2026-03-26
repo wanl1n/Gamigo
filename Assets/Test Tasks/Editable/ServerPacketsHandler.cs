@@ -10,6 +10,18 @@ namespace TestTask.Editable
         {
             var clientLogInResponse = ServerMock.Instance.TryConnectClient(out var clientId);
             SendLoginResponse(clientLogInResponse, clientId);
+
+            if (clientLogInResponse == LoginResponse.Success)
+                SendMonsterData(ServerMock.Instance.ServerMobsManager.MonsterData, clientId);
+        }
+
+        public static void DamageMonsterRequest(Packet packet)
+        {
+            var clientId = packet.ReadInt();
+            var damage = packet.ReadFloat();
+
+            ServerMock.Instance.ServerMobsManager.MonsterData.TakeDamage(damage);
+            SendMonsterData(ServerMock.Instance.ServerMobsManager.MonsterData, clientId);
         }
 
         #endregion
@@ -20,6 +32,20 @@ namespace TestTask.Editable
             using (Packet packet = new Packet(1))
             {
                 packet.Write((int)response);
+                packet.Write(clientId);
+
+                ServerMock.Instance.PacketSenderServer.SendToClient(packet);
+            }
+        }
+        public static void SendMonsterData(MonsterData monsterData, int clientId)
+        {
+            using (Packet packet = new Packet(2))
+            {
+                packet.Write(monsterData.MonsterId);
+                packet.Write((int)monsterData.MonsterType);
+                packet.Write(monsterData.MonsterName);
+                packet.Write(monsterData.MonsterMaxHealth);
+                packet.Write(monsterData.MonsterCurrentHealth);
                 packet.Write(clientId);
 
                 ServerMock.Instance.PacketSenderServer.SendToClient(packet);
