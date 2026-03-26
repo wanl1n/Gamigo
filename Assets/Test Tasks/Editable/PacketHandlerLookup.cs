@@ -10,12 +10,14 @@ namespace TestTask.Editable
         {
             {1, ClientPacketsHandler.LoginDataReceived},
             {2, ClientPacketsHandler.MonsterDataReceived},
+            {3, ClientPacketsHandler.ColorsListReceived},
         };
 
         public static Dictionary<int, PacketHandler> OnServerPacketHandlers = new Dictionary<int, PacketHandler>()
         {
             {1, ServerPacketsHandler.LoginRequest},
             {2, ServerPacketsHandler.DamageMonsterRequest},
+            {3, ServerPacketsHandler.ColorListRequest},
         };
     }
 }

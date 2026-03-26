@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using TestTask.NonEditable;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -24,6 +26,11 @@ namespace TestTask.Editable
             ServerMock.Instance.ServerMobsManager.MonsterData.TakeDamage(damage);
         }
 
+        public static void ColorListRequest(Packet packet)
+        {
+            SendColorsList();
+        }
+
         #endregion
 
         #region Packet Senders
@@ -37,6 +44,7 @@ namespace TestTask.Editable
                 ServerMock.Instance.PacketSenderServer.SendToClient(packet);
             }
         }
+
         public static void SendNewMonsterData()
         {
             using (Packet packet = new Packet(2))
@@ -51,6 +59,22 @@ namespace TestTask.Editable
             }
         }
 
+        public static void SendColorsList()
+        {
+            using (Packet packet = new Packet(3))
+            {
+                IEnumerable<Color> generatedColors = ServerMock.Instance.ServerColors.GetServerColors();
+                packet.Write(generatedColors.Count());
+                foreach (Color color in generatedColors)
+                {
+                    packet.Write(color.r);
+                    packet.Write(color.g);
+                    packet.Write(color.b);
+                }
+
+                ServerMock.Instance.PacketSenderServer.SendToClient(packet);
+            }
+        }
         #endregion
     }
 }
